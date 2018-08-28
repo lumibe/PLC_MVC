@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="UTF-8">
+	<!-- Remove this line if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width">
+	<meta name="description" content="Designa Studio, a HTML5 / CSS3 template.">
+	<meta name="author" content="Sylvain Lafitte, Web Designer, sylvainlafitte.com">
+	<title>SACVAP SUITE V. 1.0 - Configuraci&oacute;n</title>
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<link rel="shortcut icon" type="image/png" href="favicon.png">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/S7Web.css">
+</head>
+<script>
+	function loginCheck(){
+		var iFrameElement = document.getElementById('WebserverIFrame');
+		var loginForm = iFrameElement.contentWindow.document.getElementById('Login_Area_Form');
+		if(loginForm)
+		{
+			//alert("Not logged in");
+			document.getElementById('logForm').innerHTML = loginForm.parentNode.innerHTML;
+			selectScreen(0);
+		}
+		var logoutForm = iFrameElement.contentWindow.document.getElementById('logout_form');
+		if(logoutForm)
+		{
+			//alert("admin is logged in");
+			document.getElementById('logForm').innerHTML = logoutForm.parentNode.innerHTML;
+			document.getElementsByName("Redirection")[0]["value"] = "../awp/Configuracion.html"; //fit Applicationname and HTML-page name to your settings
+			selectScreen(1);
+		}       
+	}
+	function selectScreen(logged){
+		var estado= document.getElementById("estado").value;
+		if(logged==0){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "Debe autenticarse para acceder a la p&aacute;gina";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+		} else {
+			if(estado!=3){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "No hay experimento en proceso";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+			} else {
+				setStatus();
+			}
+		}
+	}
+	function setStatus(){	
+		var tags = new Array("active1","active2","active3","active4");
+		var ids = new Array("Bio1","Bio2","Bio3","Bio4");
+		var values = new Array();
+		
+		var xmlDoc = cargarXMLDoc('DB.xml');
+		if (xmlDoc != null){
+			var alarmas = xmlDoc.getElementsByTagName("TAlarmas")[0];
+			for (var i = 0; i < tags.length; i++){
+				values[i] = alarmas.getElementsByTagName(tags[i])[0].childNodes[0].nodeValue;
+			}
+		}
+		for(var i=0;i<4;i++){
+			if(values[i]==0){
+				document.getElementById(ids[i]).innerHTML = "<a>No Activo</a>";
+				document.getElementById(ids[i]).setAttribute("class", "alarm");
+			}else{
+				document.getElementById(ids[i]).innerHTML = "<a>Activo</a>";
+				document.getElementById(ids[i]).setAttribute("class", "alarmActive");
+				document.getElementById(i).setAttribute("class", "enable");
+			}
+		}
+	}
+	function cargarXMLDoc(archivoXML) {
+		var xmlDoc;
+		if (window.XMLHttpRequest){
+			xmlDoc = new window.XMLHttpRequest();
+			xmlDoc.open("GET", archivoXML, false);
+			xmlDoc.send("");
+			return xmlDoc.responseXML;
+		} else if (ActiveXObject("Microsoft.XMLDOM")){
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async = false;
+			xmlDoc.load(archivoXML);
+			return xmlDoc;
+		}
+		alert("Error cargando el documento.");
+		return null;
+	}
+	function validar(id){
+		var value = document.getElementById(id).value;
+		if(isNaN(value)){
+			document.getElementById(id).value=0;
+		}
+	}
+	function limitPH(id){
+		var value = document.getElementById(id).value;
+		if(value>14){
+			document.getElementById(id).value=14;
+		}
+	}	
+	function enviar(id, form){
+		if(confirm('Esta seguro de guardar la configuración?')){
+			document.getElementById(id).disabled=true;
+			document.getElementById(id).value='Espere...';
+			document.getElementById(id).style.background="rgb(198, 199, 198)";
+			document.getElementById(id).style.color="rgb(160, 160, 160)";
+			document.getElementById(form).submit();
+		}
+	}
+	function show(tab, link){
+		document.getElementById("tab1").style.display = "none";
+		document.getElementById("tab2").style.display = "none";
+		document.getElementById("tab3").style.display = "none";
+		document.getElementById("tab4").style.display = "none";
+		document.getElementById("t1").setAttribute("class", "");
+		document.getElementById("t2").setAttribute("class", "");
+		document.getElementById("t3").setAttribute("class", "");
+		document.getElementById("t4").setAttribute("class", "");
+		document.getElementById(tab).style.display = "block";
+		document.getElementById(link).setAttribute("class", "active");
+	}
+	
+</script>
+<body onload="loginCheck()">
+<!-- Prompt IE 7 users to install Chrome Frame -->
+<!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em><a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<!-- BEGIN Login Area -->
+	<!-- use 'src="../../Portal/Portal.mwsl"' if you 'Generate blocks' with 'Application name' and use 'src="../Portal/Portal.mwsl"' if you 'Generate blocks' without 'Application name'-->
+	<iframe id="WebserverIFrame" name="WebserverIFrameName" src="../Portal/Portal.mwsl" style="display:none"></iframe> 
+	<!-- area for login -->
+	<div id="logForm" class="Login_Area" colspan="2"></div>
+<!-- END Login Area -->
+<!-- AWP_Out_Variable Name='"Valores_Sistema"' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones"' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".ConfigurarLuz' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".ConfigurarTemp' --> 
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".ConfigurarPH' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Temperatura' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".pH' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Luz' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Temperatura.termocupla_configurada' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".pH.sensor_configurada' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Temperatura.minima' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Temperatura.maxima' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Temperatura.set_point' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".pH.minima' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".pH.maxima' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".pH.set_point' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".ConfigurarBio' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".biorreactor.numero' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".biorreactor.estado' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Save_Data' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Luz.hora_on' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Luz.hora_off' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Luz.color' -->
+<!-- AWP_In_Variable Name='"Control_Comunicaciones".Borrar_temporal' -->
+
+
+<form method="POST" action="">
+	<input type="hidden" id="estado" value=':="Valores_Sistema".Experimento.EstadoProceso:'>
+</form>
+<div class="container">
+	<header id="navtop">
+		<a href="principal.html" class="logo fleft">
+			<img src="img/logo.png" style="width: 150px;">
+		</a>
+		<nav class="headmenu">
+			<h2> SACVAP SUITE V. 1.0</h2>
+			<div id="menu">
+				<ul>
+					<li><a href="principal.html">Inicio</a></li>
+				</ul>
+				<ul>
+					<li><a href="Monitoreo.html">Monitoreo</a></li>
+				</ul>
+				<ul>
+					<li><a href="Configuracion.html" class="navactive">Configuraci&oacute;n</a></li>
+				</ul>
+				<ul class="al">
+					<li><a href="Alarmas.html">Alarmas</a></li>
+				</ul>
+			</div>
+		</nav>
+		
+		<a href="#" class="logo fright">
+			<img src="img/logo-sabana.png">
+		</a>
+		
+	</header>
+
+	<div id="page" class="services-page main grid-wrap">
+		<header class="grid col-full">
+			<hr>
+		</header>
+		<aside class="grid col-one-quarter mq2-col-full">
+			<br/> 
+			<h4 class="fleft">Experimento en curso</h4>
+			<ul><li><span>Experimento: </span> <span>:="Valores_Sistema".Experimento.CodigoExperimento: </span></li>
+				<li><span>Investigador: </span> <span>:="Valores_Sistema".Experimento.CodigoInvestigador:</span></li>
+				<li><span>Cepa: </span> <span>:="Valores_Sistema".Experimento.Cepa:</span></li>
+				<li><span>Volumen: </span> <span>:="Valores_Sistema".Experimento.Volumen:</span></li>
+				<li><span>Fecha de inicio: </span> <span>:="Valores_Sistema".Experimento.FechaInicio: </span></li>
+				<li><span>Hora de inicio: </span> <span>:="Valores_Sistema".Experimento.HoraInicio:</span></li>
+			</ul>
+		</aside>
+
+		<section class="grid col-three-quarters mq2-col-full">
+		
+			<div class="grid-wrap">
+		
+			<article id="navtogg" class="grid col-full">
+				<h2>Fotoperiodo</h2>
+				<form method="POST" action="" id="form">
+				<table align="left" cellpadding="5">
+					<tr>
+						<td>Color</td>
+						<td>
+							<select name='"Control_Comunicaciones".Luz.color'>
+							     <option  value="1">Azul</option>
+							     <option  value="2">Verde</option>
+							     <option  value="3">Celeste</option>
+							     <option  value="4">Rojo</option>
+							     <option  value="5">Violeta</option>
+							     <option  value="6">Amarillo</option>
+							     <option  value="7">Blanco</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Tiempo On</td>
+						<td><input type="text" name='"Control_Comunicaciones".Luz.hora_on' value=0 onchange="setPosition()"> n&uacute;mero entero en horas</td>
+					</tr>
+					<tr>
+						<td>Tiempo Off</td>
+						<td><input type="text" name='"Control_Comunicaciones".Luz.hora_off' value=0> n&uacute;mero entero en horas</td>
+					</tr>
+					<tr>
+						<td><input type="hidden" name='"Control_Comunicaciones".Save_Data' value="1"></td>
+						<td><input id="add" type="submit" value="Agregar" onclick="enviar(add,form)"></td>
+					</tr>
+				</table>
+				</form>
+				<table id="configTable" align="right" cellpadding="5">
+					<thead>
+						<th class="rounded-company">Color</th>
+						<th class="rounded-q1">Posici&oacute;n</th>
+						<th class="rounded-q2">Horas ON</th>
+						<th class="rounded-q3">Horas OFF</th>
+					</thead>
+					<tbody>
+						<tr>
+							 <td>Azul</td>
+							 <td id="pos1">:=MW286:</td>
+							 <td>:=MW272:</td>
+							 <td>:=MW308:</td>
+						</tr>
+						<tr>
+							 <td>Verde</td>
+							 <td id="pos2">:=MW288:</td>
+							 <td>:=MW274:</td>
+							 <td>:=MW310:</td>
+						</tr>
+						<tr>
+							 <td>Celeste</td>
+							 <td id="pos3">:=MW290:</td>
+							 <td>:=MW276:</td>
+							 <td>:=MW312:</td>
+						</tr>
+						<tr>
+							 <td>Rojo</td>
+							 <td id="pos4">:=MW292:</td>
+							 <td>:=MW278:</td>
+							 <td>:=MW314:</td>
+						</tr>
+						<tr>
+							 <td>Violeta</td>
+							 <td id="pos5">:=MW294:</td>
+							 <td>:=MW280:</td>
+							 <td>:=MW316:</td>
+						</tr>
+						<tr>
+							 <td>Amarillo</td>
+							 <td id="pos6">:=MW296:</td>
+							 <td>:=MW282:</td>
+							 <td>:=MW318:</td>
+						</tr>
+						<tr>
+							 <td>Blanco</td>
+							 <td id="pos7">:=MW298:</td>
+							 <td>:=MW284:</td>
+							 <td>:=MW320:</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<form method="POST" id="luzConf" action="">
+					<input type="hidden" name='"Control_Comunicaciones".ConfigurarLuz' value="1">
+					<input id="luzsub" type="submit" value="Guardar configuracion" onclick="enviar('luzsub', 'luzConf')"/>
+				</form>
+				<form method="POST" id="luzCancel" action="">
+					<input type="hidden" name='"Control_Comunicaciones".Borrar_temporal' value="1">
+					<input id="luzcan" type="submit" value="Cancelar" onclick="enviar('luzcan', 'luzCancel')"/>
+				</form>
+			</article>
+			
+			<article id="navtabs" class="grid col-full">
+				<h2>Biorreactores</h2>
+				<div class="">
+					<ul class="tabs clearfix">
+						<li id="t1" class="active"><a href="#tab1" onclick="show('tab1', 't1')">Biorreactor 1</a></li>
+						<li id="t2"><a href="#tab2" onclick="show('tab2', 't2')">Biorreactor 2</a></li>
+						<li id="t3"><a href="#tab3" onclick="show('tab3', 't3')">Biorreactor 3</a></li>
+						<li id="t4"><a href="#tab4" onclick="show('tab4', 't4')">Biorreactor 4</a></li>
+					</ul>
+					<div class="tab_container">						
+					   <article id="tab1" class="tab_content">
+							<span id="Bio1">Activo: :=M149.5:</span>
+							<span id='0' class="activar"><form style="float:left; padding-left:10px;" onsubmit="return confirm('Desea activar el biorreactor 1?');">
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="1"/>
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="1"/>
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+								<input type="submit" value="Activar"/></form>
+							</span><br/>
+							<br/>
+							<span class="tempTab">
+							<form method="POST" action="" id="ft1">	
+								<div>Temperatura M&iacute;nima: <input id="tn1" type="text" name='"Control_Comunicaciones".Temperatura.minima' value=0 onchange="validar('tn1')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Temperatura M&aacute;xima: <input id="tx1" type="text" name='"Control_Comunicaciones".Temperatura.maxima' value=0 onchange="validar('tx1')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint Temperatura: <input id="ts1" style="width: 245px;" type="text" name='"Control_Comunicaciones".Temperatura.set_point' value=0  onchange="validar('ts1')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".Temperatura.termocupla_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarTemp' value="1">	
+								<input id="st1" type="submit" name="guardar" value="Configurar temperatura" onclick="enviar('st1','ft1')"/>
+							</form>
+							</span>
+							<span class="phTab">
+							<form method="POST" action="" id="fp1">	
+								<div>PH Minima: <input id="pn1" type="text" name='"Control_Comunicaciones".pH.minima' value=0 onchange="validar('pn1')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>PH Maxima: <input id="px1" type="text" name='"Control_Comunicaciones".pH.maxima' value=0 onchange="validar('px1'); limitPH('px1');"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint PH: <input id="ps1" style="width: 245px;" type="text" name='"Control_Comunicaciones".pH.set_point' value=0 onchange="validar('ps1')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".pH.sensor_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarPH' value="1">
+								<input id="sp1" type="submit" name="guardar" value="Configurar pH" onclick="enviar('sp1','fp1')"/>
+							</form>
+							</span>							
+						</article>					    
+						<article id="tab2" class="tab_content">
+							<span id="Bio2">Activo: :=M149.6:</span>
+							<span id="1" class="activar"><form style="float:left; padding-left:10px;" onsubmit="return confirm('Desea activar el biorreactor 2?');">
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="2"/>
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="1"/>
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+								<input type="submit" value="Activar"/></form>
+							</span><br/>
+							<br/>
+							<span class="tempTab">
+							<form method="POST" action="" id="ft2">	
+								<div>Temperatura M&iacute;nima: <input id="tn2" type="text" name='"Control_Comunicaciones".Temperatura.minima' value=0 onchange="validar('tn2')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Temperatura M&aacute;xima: <input id="tx2" type="text" name='"Control_Comunicaciones".Temperatura.maxima' value=0 onchange="validar('tx2')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint Temperatura: <input id="ts2" style="width: 245px;" type="text" name='"Control_Comunicaciones".Temperatura.set_point' value=0  onchange="validar('ts2')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".Temperatura.termocupla_configurada' value="2">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarTemp' value="1">
+								<input id="st2" type="submit" name="guardar" value="Configurar temperatura" onclick="enviar('st2','ft2')"/>
+							</form>
+							</span>
+							<span class="phTab">
+							<form method="POST" action="" id="fp2">	
+								<div>PH Minima: <input id="pn2" type="text" name='"Control_Comunicaciones".pH.minima' value=0 onchange="validar('pn2')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>PH Maxima: <input id="px2" type="text" name='"Control_Comunicaciones".pH.maxima' value=0 onchange="validar('px2'); limitPH('px2');"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint PH: <input id="ps2" style="width: 245px;" type="text" name='"Control_Comunicaciones".pH.set_point' value=0 onchange="validar('ps2')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".pH.sensor_configurada' value="2">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarPH' value="1">
+								<input id="sp2" type="submit" name="guardar" value="Configurar pH" onclick="enviar('sp2','fp2')"/>
+							</form>
+							</span>
+						</article>
+					    <article id="tab3" class="tab_content">
+							<span id="Bio3">Activo: :=M149.7:</span>
+							<span id="2" class="activar"><form style="float:left; padding-left:10px;" onsubmit="return confirm('Desea activar el biorreactor 3?');">
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="3"/>
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="1"/>
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+								<input type="submit" value="Activar"/></form>
+							</span><br/>
+							<br/>
+							<span class="tempTab">
+				           <form method="POST" action="" id="ft3">	
+								<div>Temperatura M&iacute;nima: <input id="tn3" type="text" name='"Control_Comunicaciones".Temperatura.minima' value=0 onchange="validar('tn3')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Temperatura M&aacute;xima: <input id="tx3" type="text" name='"Control_Comunicaciones".Temperatura.maxima' value=0 onchange="validar('tx3')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint Temperatura: <input id="ts3" style="width: 245px;" type="text" name='"Control_Comunicaciones".Temperatura.set_point' value=0  onchange="validar('ts3')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".Temperatura.termocupla_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarTemp' value="3">
+								<input id="st3" type="submit" name="guardar" value="Configurar temperatura" onclick="enviar('st3','ft3')"/>
+							</form>
+							</span>
+							<span class="phTab">
+							<form method="POST" action="" id="fp3">	
+								<div>PH Minima: <input id="pn3" type="text" name='"Control_Comunicaciones".pH.minima' value=0 onchange="validar('pn3')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>PH Maxima: <input id="px3" type="text" name='"Control_Comunicaciones".pH.maxima' value=0 onchange="validar('px3'); limitPH('px3');"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint PH: <input id="ps3" style="width: 245px;" type="text" name='"Control_Comunicaciones".pH.set_point' value=0 onchange="validar('ps3')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".pH.sensor_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarPH' value="3">
+								<input id="sp3" type="submit" name="guardar" value="Configurar pH" onclick="enviar('sp3','fp3')"/>
+							</form>
+							</span>
+						</article>
+						<article id="tab4" class="tab_content">
+							<span id="Bio4">Activo: :=M150.0:</span>
+							<span id="3" class="activar"><form style="float:left; padding-left:10px;" onsubmit="return confirm('Desea activar el biorreactor 4?');">
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="4"/>
+								<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="1"/>
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+								<input type="submit" value="Activar"/></form>
+							</span><br/>
+							<br/>
+							<span class="tempTab">
+				            <form method="POST" action="" id="ft4">	
+								<div>Temperatura M&iacute;nima: <input id="tn4" type="text" name='"Control_Comunicaciones".Temperatura.minima' value=0 onchange="validar('tn4')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Temperatura M&aacute;xima: <input id="tx4" type="text" name='"Control_Comunicaciones".Temperatura.maxima' value=0 onchange="validar('tx4')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint Temperatura: <input id="ts4" style="width: 245px;" type="text" name='"Control_Comunicaciones".Temperatura.set_point' value=0  onchange="validar('ts4')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".Temperatura.termocupla_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarTemp' value="4">
+								<input id="st4" type="submit" name="guardar" value="Configurar temperatura" onclick="enviar('st4','ft4')"/>
+							</form>
+							</span>
+							<span class="phTab">
+							<form method="POST" action="" id="fp4">	
+								<div>PH Minima: <input id="pn4" type="text" name='"Control_Comunicaciones".pH.minima' value=0 onchange="validar('pn4')"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>PH Maxima: <input id="px4" type="text" name='"Control_Comunicaciones".pH.maxima' value=0 onchange="validar('px4'); limitPH('px4');"></div>
+								<div class="anotacion"> *Valor entero.</div>
+								<div>Setpoint PH: <input id="ps4" style="width: 245px;" type="text" name='"Control_Comunicaciones".pH.set_point' value=0 onchange="validar('ps4')"></div>
+								<div class="anotacion"> *Valor entero o decimal (con punto decimal).</div>
+								<input type="hidden" name='"Control_Comunicaciones".pH.sensor_configurada' value="1">
+								<input type="hidden" name='"Control_Comunicaciones".ConfigurarPH' value="4">
+								<input id="sp4" type="submit" name="guardar" value="Configurar pH" onclick="enviar('sp4','fp4')"/>
+							</form>
+							</span>
+						</article>
+					 </div>
+				  </div>
+			</article>	
+			</div> <!-- 100%articles-->
+		</section>	
+	</div> <!--main-->
+
+<div class="divide-top">
+	<footer class="grid-wrap">
+	<nav id="foot" class="grid col-full ">
+		<ul>
+			<li><a href="principal.html">Inicio</a></li>
+			<li><a href="Monitoreo.html">Monitoreo</a></li>
+			<li><a href="Configuracion.html">Configuraci&oacute;n</a></li>
+			<li><a href="Alarmas.html">Alarmas</a></li>
+		</ul>
+	</nav>
+	<br/>
+	<p class="mbottom">
+		Proyecto desarrollado por el grupo de investigacion CAPSAB de la Universidad de La Sabana.<br/>
+		Bajo la direcci&oacute;n de los profesores: Claudia Lorena Garz&oacute;n, Luis Miguel Beltr&aacute;n<br/>
+		Desarrollado por los estudiantes: Cesar Augusto Forero, Mar&iacute;a Ang&eacute;lica Loeber<br/>
+		<br/>				
+	</p>
+</footer>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="UTF-8">
+	<!-- Remove this line if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width">
+	<meta name="description" content="Pagina web para control y monitorizacion de experimentos en curso de control de microalgas">	
+	<title>SACVAP SUITE V. 1.0 -  HOME</title>
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<link rel="shortcut icon" type="image/png" href="favicon.png">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/S7Web.css">
+</head>
+
+<script>
+	function loginCheck()
+	{
+			var iFrameElement = document.getElementById('WebserverIFrame');
+			var loginForm = iFrameElement.contentWindow.document.getElementById('Login_Area_Form');
+			if(loginForm)
+			{
+				//alert("Not logged in");
+				document.getElementById('logForm').innerHTML = loginForm.parentNode.innerHTML;
+				selectScreen(0);
+			}
+			var logoutForm = iFrameElement.contentWindow.document.getElementById('logout_form');
+			if(logoutForm)
+			{
+				//alert("admin is logged in");
+				document.getElementById('logForm').innerHTML = logoutForm.parentNode.innerHTML;
+				document.getElementsByName("Redirection")[0]["value"] = "../awp/principal.html"; //fit Applicationname and HTML-page name to your settings
+				selectScreen(1);
+			}       
+	}
+	function selectScreen(logged){
+		var estado= document.getElementById("estado").value;
+		if(logged==0){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "Debe autenticarse para acceder a la p&aacute;gina";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+		} else {
+			if(estado!=3){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "No hay experimento en proceso";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+			} else {
+				setStatus();
+			}
+		}
+	}
+</script>
+
+<body onload="selectScreen(logged);">
+<!-- Prompt IE 7 users to install Chrome Frame -->
+<!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<!-- BEGIN Login Area -->
+	<!-- use 'src="../../Portal/Portal.mwsl"' if you 'Generate blocks' with 'Application name' and use 'src="../Portal/Portal.mwsl"' if you 'Generate blocks' without 'Application name'-->
+	<iframe id="WebserverIFrame" name="WebserverIFrameName" src="../Portal/Portal.mwsl" style="display:none"></iframe> 
+	<!-- area for login -->
+	<div id="logForm" class="Login_Area" colspan="2"></div>
+<!-- END Login Area -->
+
+<!-- AWP_Out_Variable Name='"Valores_Sistema"' --> 
+<form method="POST" action="">
+	<div class="enable"><input type="text" id="estado" value=':="Valores_Sistema".Experimento.EstadoProceso:'></div>
+</form>
+<div id="container" class="container">
+	<header id="navtop">
+		<a href="principal.html" class="logo fleft">
+			<img src="img/logo.png" style="width: 150px;">
+		</a>
+		<nav class="headmenu">
+			<h2> SACVAP SUITE V. 1.0</h2>
+			<div id="menu">
+			<ul>
+				<li><a href="principal.html" class="navactive">Inicio</a></li>
+			</ul>
+			<ul>
+				<li><a href="Monitoreo.html">Monitoreo</a></li>
+			</ul>
+			<ul>
+				<li><a href="Configuracion.html">Configuraci&oacute;n</a></li>
+			</ul>
+			<ul class="al">
+				<li><a href="Alarmas.html">Alarmas</a></li>
+			</ul>
+			</div>
+		</nav>
+		<a href="#" class="logo fright">
+			<img src="img/logo-sabana.png">
+		</a>
+	</header>
+
+	<div id="page" class="home-page main">
+		<section class="grid-wrap" >
+			<header class="grid col-full"><hr></header>
+			<div class="grid col-one-half mq2-col-full home-height">
+				<h1> SACVAP SUITE V. 1.0</h1>
+				<h2>Sistema de control para el cultivo de Microalgas</h2>
+				<!-- AWP_Out_Variable Name='"Valores_Sistema"' --> 
+				<div><h4 class="fleft">Experimento en curso</h4></div>
+				<div class="principal">
+					<ul><li><span>Investigador: </span> <span>:="Valores_Sistema".Experimento.CodigoExperimento: </span></li>
+						<li><span>Experimento: </span> <span>:="Valores_Sistema".Experimento.CodigoInvestigador:</span></li>
+						<li><span>Cepa: </span> <span>:="Valores_Sistema".Experimento.Cepa:</span></li>
+						<li><span>Volumen: </span> <span>:="Valores_Sistema".Experimento.Volumen:</span></li>
+						<li><span>Fecha de inicio: </span> <span>:="Valores_Sistema".Experimento.FechaInicio: </span></li>
+						<li><span>Hora de inicio: </span> <span>:="Valores_Sistema".Experimento.HoraInicio:</span></li>
+					</ul>
+					<br/><br/>
+					<p>
+						<a href="Monitoreo.html" class="button">Monitoreo</a>   
+						<a href="Configuracion.html" class="button">Configuraci&oacute;n</a>
+					</p>
+				</div>
+			</div>
+			<div class="fright"><img src="img/img.png" alt=""></div>
+		</section>
+	</div> <!--main-->
+	<div class="divide-top">
+		<footer class="grid-wrap">
+			<nav id="foot" class="grid col-full ">
+				<ul><li><a href="principal.html">Inicio</a></li>
+					<li><a href="Monitoreo.html">Monitoreo</a></li>
+					<li><a href="Configuracion.html">Configuraci&oacute;n</a></li>
+					<li><a href="Alarmas.html">Alarmas</a></li>
+				</ul>
+			</nav><br/>
+			<p class="mbottom">
+				Proyecto desarrollado por el grupo de investigacion CAPSAB de la Universidad de La Sabana.<br/>
+				Bajo la direcci&oacute;n de los profesores: Claudia Lorena Garz&oacute;n, Luis Miguel Beltr&aacute;n<br/>
+				Desarrollado por los estudiantes: Cesar Augusto Forero, Mar&iacute;a Ang&eacute;lica Loeber<br/><br/>				
+			</p>
+		</footer>
+	</div>
+</div>
+
+</body>
+</html>

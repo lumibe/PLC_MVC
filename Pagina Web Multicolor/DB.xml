@@ -1,0 +1,22 @@
+<TAlarmas>	
+	<active1>:=M149.5:</active1>
+	<active2>:=M149.6:</active2>
+	<active3>:=M149.7:</active3>
+	<active4>:=M150.0:</active4>
+	<temp1>:=M150.6:</temp1>
+	<vent1>:=M148.0:</vent1>
+	<cal1>:=M148.4:</cal1>
+	<ph1>:=M151.2:</ph1>
+	<temp2>:=M150.7:</temp2>
+	<vent2>:=M148.1:</vent2>
+	<cal2>:=M148.5:</cal2>
+	<ph2>:=M151.3:</ph2>
+	<temp3>:=M151.0:</temp3>
+	<vent3>:=M148.2:</vent3>
+	<cal3>:=M148.6:</cal3>
+	<ph3>:=M151.4:</ph3>
+	<temp4>:=M151.1:</temp4>
+	<vent4>:=M148.3:</vent4>
+	<cal4>:=M148.7:</cal4>
+	<ph4>:=M151.5:</ph4>
+</TAlarmas>

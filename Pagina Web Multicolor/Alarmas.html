@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="UTF-8">
+	
+	<!-- Remove this line if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Refresh" content="60">
+	<meta name="viewport" content="width=device-width">
+	<meta name="description" content="Designa Studio, a HTML5 / CSS3 template.">
+	<meta name="author" content="Sylvain Lafitte, Web Designer, sylvainlafitte.com">
+	<title>SACVAP SUITE V. 1.0 - Alarmas y logs</title>
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<link rel="shortcut icon" type="image/png" href="favicon.png">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/S7Web.css">
+</head>
+		
+<script>
+	function loginCheck()
+	{
+			var iFrameElement = document.getElementById('WebserverIFrame');
+			var loginForm = iFrameElement.contentWindow.document.getElementById('Login_Area_Form');
+			if(loginForm)
+			{
+				//alert("Not logged in");
+				document.getElementById('logForm').innerHTML = loginForm.parentNode.innerHTML;
+				selectScreen(0);
+			}
+			var logoutForm = iFrameElement.contentWindow.document.getElementById('logout_form');
+			if(logoutForm)
+			{
+				//alert("admin is logged in");
+				document.getElementById('logForm').innerHTML = logoutForm.parentNode.innerHTML;
+				document.getElementsByName("Redirection")[0]["value"] = "../awp/Alarmas.html"; //fit Applicationname and HTML-page name to your settings
+				selectScreen(1);
+			}       
+	}
+	function selectScreen(logged){
+		var estado= document.getElementById("estado").value;
+		if(logged==0){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "Debe autenticarse para acceder a la p&aacute;gina";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+		} else {
+			if(estado!=3){
+			document.getElementById("page").innerHTML = "";
+			document.getElementById("foot").innerHTML = "";
+			document.getElementById("menu").innerHTML = "No hay experimento en proceso";
+			document.getElementById("menu").style.width="492px";
+			document.getElementById("menu").style.fontSize="16px";
+			document.getElementById("menu").style.color="red";
+			} else {
+				setAlarms();
+			}
+		}
+	}	
+	function setAlarms()
+	{	
+		var tags = new Array("active1","active2","active3","active4","temp1","ph1","temp2","ph2","temp3","ph3","temp4","ph4");
+		var ids = new Array("Bio1stop","Bio2stop","Bio3stop","Bio4stop","Bio1Temp", "Bio1ph","Bio2Temp","Bio2ph","Bio3Temp","Bio3ph","Bio4Temp","Bio4ph");
+		var values = new Array();
+		
+		var xmlDoc = cargarXMLDoc('DB.xml');
+		if (xmlDoc != null){
+			var alarmas = xmlDoc.getElementsByTagName("TAlarmas")[0];
+			for (var i = 0; i < tags.length; i++){
+				values[i] = alarmas.getElementsByTagName(tags[i])[0].childNodes[0].nodeValue;
+			}
+		}
+		
+		for(var i=0;i<4;i++){
+			if(values[i]==0){
+				document.getElementById(ids[i]).disabled=true;
+				document.getElementById(i).setAttribute("class", "disabled");
+			}
+		}
+		
+		for(var i=4;i<values.length;i++){
+			if(values[i]==0){
+				document.getElementById(ids[i]).setAttribute("class", "alarm");
+			}else{
+				document.getElementById(ids[i]).setAttribute("class", "alarmActive");
+			}
+		}
+	}
+	
+	function cargarXMLDoc(archivoXML) {
+		var xmlDoc;
+		if (window.XMLHttpRequest){
+			xmlDoc = new window.XMLHttpRequest();
+			xmlDoc.open("GET", archivoXML, false);
+			xmlDoc.send("");
+			return xmlDoc.responseXML;
+		} else if (ActiveXObject("Microsoft.XMLDOM")){
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async = false;
+			xmlDoc.load(archivoXML);
+			return xmlDoc;
+		}
+		alert("Error cargando el documento.");
+		return null;
+	}
+
+</script>
+
+<body onload="loginCheck()">
+<!-- Prompt IE 7 users to install Chrome Frame -->
+<!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<!-- BEGIN Login Area -->
+	<!-- use 'src="../../Portal/Portal.mwsl"' if you 'Generate blocks' with 'Application name' and use 'src="../Portal/Portal.mwsl"' if you 'Generate blocks' without 'Application name'-->
+	<iframe id="WebserverIFrame" name="WebserverIFrameName" src="../Portal/Portal.mwsl" style="display:none"></iframe> 
+	<!-- area for login -->
+	<div id="logForm" class="Login_Area" colspan="2"></div>
+<!-- END Login Area -->
+
+<!-- AWP_Out_Variable Name='"Valores_Sistema"' --> 
+<form method="POST" action="">
+	<input type="hidden" id="estado" value=':="Valores_Sistema".Experimento.EstadoProceso:'>
+</form>
+
+<div class="container">
+	<header id="navtop">
+		<a href="principal.html" class="logo fleft">
+			<img src="img/logo.png" style="width: 150px;">
+		</a>
+		
+		<nav class="headmenu">
+			<h2> SACVAP SUITE V. 1.0</h2>
+			<div id="menu">
+				<ul>
+					<li><a href="principal.html">Inicio</a></li>
+				</ul>
+				<ul>
+					<li><a href="Monitoreo.html">Monitoreo</a></li>
+				</ul>
+				<ul>
+					<li><a href="Configuracion.html">Configuraci&oacute;n</a></li>
+				</ul>
+				<ul class="al">
+					<li><a href="Alarmas.html" class="navactive">Alarmas</a></li>
+				</ul>
+			</div>
+		</nav>
+		
+		<a href="#" class="logo fright">
+			<img src="img/logo-sabana.png">
+		</a>
+		
+	</header>
+
+	<div id="page" class="about-page main grid-wrap">
+
+		<header class="grid col-full">
+		<hr>
+		</header>
+		
+		<aside class="grid col-one-quarter mq2-col-full">
+			<br/>
+			<!-- AWP_Out_Variable Name='"Valores_Sistema"' --> 
+			<h4 class="fleft">Experimento en curso</h4>
+			<ul><li><span>Experimento: </span> <span>:="Valores_Sistema".Experimento.CodigoExperimento: </span></li>
+				<li><span>Investigador: </span> <span>:="Valores_Sistema".Experimento.CodigoInvestigador:</span></li>
+				<li><span>Cepa: </span> <span>:="Valores_Sistema".Experimento.Cepa:</span></li>
+				<li><span>Volumen: </span> <span>:="Valores_Sistema".Experimento.Volumen:</span></li>
+				<li><span>Fecha de inicio: </span> <span>:="Valores_Sistema".Experimento.FechaInicio: </span></li>
+				<li><span>Hora de inicio: </span> <span>:="Valores_Sistema".Experimento.HoraInicio:</span></li>
+			</ul>
+		</aside>
+		
+		<!-- AWP_In_Variable Name='"Control_Comunicaciones".ConfigurarBio' -->
+		<!-- AWP_In_Variable Name='"Control_Comunicaciones".biorreactor.numero' -->
+		<!-- AWP_In_Variable Name='"Control_Comunicaciones".biorreactor.estado' -->
+		<section class="grid col-three-quarters mq2-col-full">
+			<div class="fleft alarmas">
+				<h4>Alarmas</h4>
+				<table id="alarmTable" cellpadding="5px 15px">
+					<thead>
+						<tr>
+						<th scope="col" class="rounded-company">Biorreactor</th>
+						<th scope="col" class="rounded-q1">Temperatura</th>
+						<th scope="col" class="rounded-q1">pH</th>
+						<th scope="col" class="rounded-q2">Detener</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Biorreactor 1</td>
+							<td id="Bio1Temp"><a>:="HMI_TemperaturaActualTermocupla1":</a></td>
+							<td id="Bio1ph"><a>:="HMI_PHActualDispositivo1":</a></td>
+							<td id="0" class="detener">
+								<form id="stop1">
+									<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="1"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="0"/>
+									<input id="Bio1stop" type="submit" value="Detener" onclick="enviar('Bio1stop','stop1')"/>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>Biorreactor 2</td>
+							<td id="Bio2Temp"><a>:="HMI_TemperaturaActualTermocupla2":</a></td>
+							<td id="Bio2ph"><a>:="HMI_PHActualDispositivo2":</a></td>
+							<td id="1" class="detener">
+								<form id="stop2">
+									<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="2"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="0"/>
+									<input id="Bio2stop" type="submit" value="Detener" onclick="enviar('Bio2stop','stop2')"/>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>Biorreactor 3</td>
+							<td id="Bio3Temp"><a>:="HMI_TemperaturaActualTermocupla3":</a></td>
+							<td id="Bio3ph"><a>:="HMI_PHActualDispositivo3":</a></td>
+							<td id="2" class="detener">
+								<form id="stop3">
+									<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="3"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="0"/>
+									<input id="Bio3stop" type="submit" value="Detener" onclick="enviar('Bio3stop','stop3')"/>
+								</form>
+							</td>
+						</tr>
+						<tr>
+							<td>Biorreactor 4</td>
+							<td id="Bio4Temp"><a>:="HMI_TemperaturaActualTermocupla4":</a></td>
+							<td id="Bio4ph"><a>:="HMI_PHActualDispositivo4":</a></td>
+							<td id="3" class="detener">
+								<form id="stop4">
+									<input type="hidden" name='"Control_Comunicaciones".ConfigurarBio' value="1"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.numero' value="4"/>
+									<input type="hidden" name='"Control_Comunicaciones".biorreactor.estado' value="0"/>
+									<input id="Bio4stop" type="submit" value="Detener" onclick="enviar('Bio4stop','stop4')"/>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<br/>
+				<!-- AWP_In_Variable Name='"Control_Comunicaciones".detener' --> 
+				<form method="POST" action="">
+					<input type="hidden" name='"Control_Comunicaciones".detener' value="1"/>
+					<input type="submit" value="Parar Experimento" style="margin-left: 33%;"/>
+				</form>
+				<br/>
+			</div>
+			
+			<div class="logs">
+				<table id="alarmTable" cellpadding="5px 15px">
+					<thead>
+						<tr>
+						<th colspan="2" scope="col" class="rounded-logs">Informaci&oacute;n Logs</th></tr>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td id="field">Estado Bloque:</td><td> :="Valores_Sistema".Logs.Estado_Bloque:</td>
+						</tr>
+						<tr>
+							<td id="field">Proceso Logs:</td><td> :="Valores_Sistema".Logs.Proceso_Bloque:</td>
+						</tr>
+						<tr>
+							<td id="field">C&oacute;digo del estado:</td><td> :="Valores_Sistema".Logs.Codigo_Estado_Proceso:</td>
+						</tr>
+						<tr>
+							<td id="field">N&uacute;mero de Registros:</td><td> :="Valores_Sistema".Logs.Registros_Escritos:</td>
+						</tr>
+						<tr>
+							<td id="field">Log Lleno:</td><td> :="Valores_Sistema".Logs.Limite_Logs:</td>
+						</tr>
+						<tr>
+							<td id="field">Cantidad de Logs Generados:</td><td> :="Valores_Sistema".Logs.Cantidad_Logs:</td>
+						</tr>
+						<tr>
+							<td id="field">Error en logs:</td><td>:="Valores_Sistema".Logs.Error_Logs:</td>
+					</tr>
+					</tbody>
+				</table>
+				<div>
+					<span id="field"><a href="../Portal/Portal.mwsl?PriNav=DataLog" target="_blank">Acceder a logs del experimento</a>
+				</div>
+			</div>
+		</section>
+		
+	</div> <!--main-->
+
+<div class="divide-top">
+<footer class="grid-wrap">
+	<nav id="foot" class="grid col-full ">
+		<ul>
+			<li><a href="principal.html">Inicio</a></li>
+			<li><a href="Monitoreo.html">Monitoreo</a></li>
+			<li><a href="Configuracion.html">Configuraci&oacute;n</a></li>
+			<li><a href="Alarmas.html">Alarmas</a></li>
+		</ul>
+	</nav>
+	<br/>
+	<p class="mbottom">
+		Proyecto desarrollado por el grupo de investigacion CAPSAB de la Universidad de La Sabana.<br/>
+		Bajo la direcci&oacute;n de los profesores: Claudia Lorena Garz&oacute;n, Luis Miguel Beltr&aacute;n<br/>
+		Desarrollado por los estudiantes: Cesar Augusto Forero, Mar&iacute;a Ang&eacute;lica Loeber<br/>
+		<br/>				
+	</p>
+</footer>
+</div>
+
+</div>
+
+</body>
+</html>
